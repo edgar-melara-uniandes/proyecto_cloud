@@ -29,3 +29,5 @@ tomli==2.0.1
 typing-extensions==4.4.0
 Werkzeug==2.2.2
 zipp==3.9.0
+celery==5.2.3
+redis==4.1.4
