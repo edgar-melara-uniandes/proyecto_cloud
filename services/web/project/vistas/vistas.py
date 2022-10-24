@@ -26,21 +26,20 @@ celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKE
 def add_music_conversion_request(music_conversion):
     pass
 
-ALLOWED_EXTENSIONS = {"mp3"}
+ALLOWED_EXTENSIONS = {"mp3", "acc", "ogg", "wav","wma"}
 class VistaRegistro(Resource):
 
     def post(self):
-        
+        usuario_viejo = User.query.filter(User.username == request.json["username"]).first()
+        email_viejo = User.query.filter(User.email == request.json["email"]).first()
+        if usuario_viejo is not None or email_viejo is not None:
+            return {"mensaje": "El usuario o correo electronico ya estan registrados", "status": "fail"}, 404
         if request.json['password1'] != request.json['password2']:
             return {"mensaje": "Las contraseñas deben ser iguales", "status": "fail"}, 404
         
         nuevo_usuario = User(username=request.json['username'], email=request.json['email'], password=request.json['password1'])
         db.session.add(nuevo_usuario)
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-            return 'Ya existe un evento con este nombre', 409
+        db.session.commit()
         token_de_acceso = create_access_token(identity=nuevo_usuario.id)
         return {"mensaje": "usuario creado exitosamente", "token": token_de_acceso, "status": "success", "id": nuevo_usuario.id}
 
@@ -157,7 +156,7 @@ class VistaFile(Resource):
             return send_file(task.path_input,  as_attachment=True) 
 class VistaUpdateConverted(Resource):
     def post(self):
-        task = Task.query.filter(Task.id == request.json['taskId']).one_or_none()
+        task = Task.query.filter(Task.folder == request.json['taskId']).one_or_none()
         if task is None:
             return {"message": "No se encontro la tarea", "status": "fail"}, 404
         task.path_output = request.json['output']

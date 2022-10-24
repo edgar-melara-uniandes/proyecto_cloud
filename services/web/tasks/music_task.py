@@ -1,5 +1,7 @@
 import os
 import time
+import requests
+import json
 
 from celery import Celery
 import subprocess
@@ -10,6 +12,7 @@ BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
 BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
 UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER')}/project/media"))
+ENDPOINT = str(os.environ.get("ENDPOINT_CONVERTED_DB", "http://127.0.0.1:1337/api/converted"))
 
 @celery_app.task(name='music_conversions')
 def add_music_conversion_request(response):
@@ -39,7 +42,12 @@ def convert_audio_file(response):
     
     output = f'{UPLOAD_FOLDER}/{user_id}/{task_id}/converted/{file_name}.{target_format}'
 
-    subprocess.call(["ffmpeg","-i",audio_file_path,output])
+    try:
+        subprocess.call(["ffmpeg","-i",audio_file_path,output])
+    except:
+        pass
+    else:
+        updatedDB(task_id, output)
     # alternativas:
     # subprocesscall
     # os.system("ffmpeg -i audio_file_a.mp3 audio_file_a.aac") # no recomendado
@@ -50,5 +58,9 @@ def convert_audio_file(response):
     # excepciones:
     # sound.export(file_name+"_conv.aac", format="adts")
     # sound.export(file_name+"_conv.wma", format="wma") no funciona
-
+def updatedDB(taskId, output):
+    send = {"taskId":taskId, "output": output}
+    headers = {'Content-Type': 'application/json'}
+    result = requests.post(ENDPOINT,data=json.dumps(send),headers=headers)
+    print(result.content)
 

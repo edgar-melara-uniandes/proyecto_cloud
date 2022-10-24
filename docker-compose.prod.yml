@@ -49,9 +49,7 @@ services:
 
   redis-local:
     image: redis/redis-stack-server:latest
-
-  
-
+    
 volumes:
   postgres_data_prod:
   static_volume:
