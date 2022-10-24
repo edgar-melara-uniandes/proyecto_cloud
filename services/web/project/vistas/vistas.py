@@ -94,11 +94,12 @@ class VistaTasks(Resource):
             db.session.add(new_task)
             db.session.commit()
             data = {
-                    "user_id": identity,
+                    "userId": identity,
                     "filePath": new_task.path_input,
                     "originType": new_task.format_input,
                     "targetType": new_task.format_output, 
-                    "task_id": new_task.folder,
+                    "taskId": new_task.folder,
+                    "fileName": new_task.file_name
                 }
             args = (data,)
             task = add_music_conversion_request.apply_async(args)
