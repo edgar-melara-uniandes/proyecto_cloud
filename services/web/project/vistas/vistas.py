@@ -32,7 +32,7 @@ class VistaRegistro(Resource):
     def post(self):
         
         if request.json['password1'] != request.json['password2']:
-            return {"mensaje": "Las contraseñas deben ser iguales", "status": "fail"}, 401
+            return {"mensaje": "Las contraseñas deben ser iguales", "status": "fail"}, 404
         
         nuevo_usuario = User(username=request.json['username'], email=request.json['email'], password=request.json['password1'])
         db.session.add(nuevo_usuario)
@@ -51,7 +51,7 @@ class VistaLogin(Resource):
                                        User.password == request.json["password"]).first()
         db.session.commit()
         if usuario is None:
-            return {"mensaje": "Revise los datos e intente nuevamente", "status": "fail"}, 401
+            return {"mensaje": "Revise los datos e intente nuevamente", "status": "fail"}, 404
         else:
             token_de_acceso = create_access_token(identity=usuario.id)
             return {"mensaje": "Inicio de sesión exitoso", "token": token_de_acceso, "status": "success"}
@@ -83,11 +83,11 @@ class VistaTasks(Resource):
         identity = get_jwt_identity()
         folder = uuid.uuid4()
         if 'fileName' not in request.files:
-            return {"message": "cargar un archivo en fileName", "status":"fail"}, 401
+            return {"message": "cargar un archivo en fileName", "status":"fail"}, 404
         if request.files == '':
-            return {"message": "cargar un archivo en fileName", "status":"fail"}, 401
+            return {"message": "cargar un archivo en fileName", "status":"fail"}, 404
         if not request.form.get("newFormat"):
-            return {"message": "Debe agregar el formato de destino", "status":"fail"}, 401
+            return {"message": "Debe agregar el formato de destino", "status":"fail"}, 404
         process_upload_file = uploadFile(request.files, identity, folder)
         if process_upload_file['status']:
             new_task = Task(date_created=datetime.datetime.now(),format_input=process_upload_file["format_input"], format_output=request.form.get("newFormat"), path_input=process_upload_file["file_path"], status="uploaded", id_user=identity, folder = str(folder), file_name=process_upload_file['file_name'])
@@ -104,7 +104,7 @@ class VistaTasks(Resource):
             args = (data,)
             task = add_music_conversion_request.apply_async(args)
             return {"message": "El archivo fue cargado y la tarea creada", "status":"success"}
-        return {"message": "Problemas cargando el archivo", "status":"fail"}, 401
+        return {"message": "Problemas cargando el archivo", "status":"fail"}, 404
         
 class VistaTask(Resource): 
     @jwt_required()
@@ -118,9 +118,9 @@ class VistaTask(Resource):
     def put(self, id_task):
         identity = get_jwt_identity()
         if not request.form.get("newFormat"):
-            return {"message": "Debe agregar el formato de destino", "status":"fail"}, 401
+            return {"message": "Debe agregar el formato de destino", "status":"fail"}, 404
         if not request.form.get("newFormat") in ALLOWED_EXTENSIONS:
-            return {"message": "El formato no es válido", "status":"fail"}, 401
+            return {"message": "El formato no es válido", "status":"fail"}, 404
         task = Task.query.filter(Task.id == id_task, Task.id_user == identity).one_or_none()
         if task is None:
             return {"message": "No se encontro la tarea"}
@@ -155,7 +155,16 @@ class VistaFile(Resource):
         else:
             """ mimetype="application/octet-stream", """
             return send_file(task.path_input,  as_attachment=True) 
-
+class VistaUpdateConverted(Resource):
+    def post(self):
+        task = Task.query.filter(Task.id == request.json['taskId']).one_or_none()
+        if task is None:
+            return {"message": "No se encontro la tarea", "status": "fail"}, 404
+        task.path_output = request.json['output']
+        task.date_updated = datetime.datetime.now()
+        task.status = "processed"
+        db.session.commit()
+        return {"message": "Actualización realizada", "status": "success"}, 200
 class HelloWorld(Resource):
     def get(self):
         return {"hello":"world"}, 200
