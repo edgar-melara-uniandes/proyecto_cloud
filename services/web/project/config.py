@@ -10,3 +10,4 @@ class Config(object):
     STATIC_FOLDER = f"{os.getenv('APP_FOLDER')}/project/static"
     MEDIA_FOLDER = f"{os.getenv('APP_FOLDER')}/project/media"
     JWT_SECRET_KEY = os.getenv("SECRET_KEY")
+    DEBUG = True
