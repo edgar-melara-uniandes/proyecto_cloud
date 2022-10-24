@@ -3,6 +3,8 @@ import os
 import shutil
 import uuid
 import datetime
+from celery import Celery
+from celery.result import AsyncResult
 from flask_restful import Resource
 from flask import request, send_file, send_from_directory
 from werkzeug.utils import secure_filename
@@ -16,6 +18,13 @@ user_schema = UserSchema()
 task_schema = TaskSchema()
 list_task_schema = TaskSchema(many=True)
 UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER')}/project/media"))
+BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
+
+@celery_app.task(name = 'music_conversions')
+def add_music_conversion_request(music_conversion):
+    pass
 
 ALLOWED_EXTENSIONS = {"mp3"}
 class VistaRegistro(Resource):
@@ -84,6 +93,15 @@ class VistaTasks(Resource):
             new_task = Task(date_created=datetime.datetime.now(),format_input=process_upload_file["format_input"], format_output=request.form.get("newFormat"), path_input=process_upload_file["file_path"], status="uploaded", id_user=identity, folder = str(folder), file_name=process_upload_file['file_name'])
             db.session.add(new_task)
             db.session.commit()
+            data = {
+                    "user_id": identity,
+                    "filePath": new_task.path_input,
+                    "originType": new_task.format_input,
+                    "targetType": new_task.format_output, 
+                    "task_id": new_task.folder,
+                }
+            args = (data,)
+            task = add_music_conversion_request.apply_async(args)
             return {"message": "El archivo fue cargado y la tarea creada", "status":"success"}
         return {"message": "Problemas cargando el archivo", "status":"fail"}, 401
         
