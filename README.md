@@ -17,7 +17,7 @@ El objectivo de la applicacion es convertir archivos de audio a diferentes forma
 
 
 ## Comandos para inicializar app
-
+El prerequisito para ejecutar el app es, tener docker previamente instalado
 
 Para inicializar la aplicación se ejecuta el comando:
 
