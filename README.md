@@ -4,7 +4,8 @@
 ### Descripción
 El objectivo de la applicacion es convertir archivos de audio a diferentes formatos para esto se utilzan las siguientes tecnologias:
 
--Docker: para la orquestacion de los servicios, contenedores donde se ejecutan las diferentes componentes de la aplicación
+- Docker: para la orquestacion de los servicios, contenedores donde se ejecutan las diferentes componentes de la aplicación
+
 -Nginx: Como revese proxy, enmascara al cliente los servicios expuestos
 -Unicorn: Como servidor de la applicacion python que permite la concurrencia de peticiones
 -Flask: Para la definon de API rest
