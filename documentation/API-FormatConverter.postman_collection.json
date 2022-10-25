@@ -1,0 +1,339 @@
+{
+	"info": {
+		"_postman_id": "dea5628c-7fa3-4491-9efa-f42a2bcaebac",
+		"name": "API-FormatConverter",
+		"description": "# Introduction\nPermite crear usuarios para registro de archivos de audio en formatos .mp3, .aac, .ogg, .wav y .wma\n\n# Overview\nConsultar como montar la solución completa y como montarla en https://github.com/edgar-melara-uniandes/proyecto_cloud\n\n# Authentication\nMediante el procedimiento de login, puede autenticarse para obtener un JSON Web Token para luego llamar los distintos metodos ofrecidos en esta definición de API.\n\n# Error Codes\nNo se definieron códigos de errores puntuales para esta API\n\n# Rate limit\nPara el límite (teórico) de la aplicación, ver la documentación en esta Wiki: https://github.com/edgar-melara-uniandes/proyecto_cloud/wiki",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Registro de usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"pm.environment.set(\"token\",data.token);",
+							"tests[\"token generado\"] = responseCode.code === 202;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"luis\",\n\t\"password1\": \"123\",\n\t\"password2\": \"123\",\n\t\"email\": \"luis@test.com\"\n}"
+				},
+				"url": {
+					"raw": "{{host_nginx}}/api/auth/signup",
+					"host": [
+						"{{host_nginx}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"signup"
+					]
+				},
+				"description": "Use este endpoint para registrarse en la plataforma. Provea un nombre de usuario, contraseña (2 veces la misma), y el correo electrónico. No se permiten correos ni usuarios repetidos."
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"pm.environment.set(\"token\",data.token);",
+							"tests[\"token generado\"] = responseCode.code === 202;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\":\"luis4\",\n\t\"password\": \"123\"\n\t\n}"
+				},
+				"url": {
+					"raw": "{{host_nginx}}/api/auth/login",
+					"host": [
+						"{{host_nginx}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Ingrese un usuario y contraseña válidos para conseguir un JWT token para poder usar las demás rutas y métodos definidos en la API (a excepción de SignUp)"
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Tarea",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "fileName",
+							"description": "Archivo local a cargar",
+							"type": "file",
+							"src": "test2.mp3"
+						},
+						{
+							"key": "newFormat",
+							"value": "mp3",
+							"description": "Formato destino de conversión, soporta \"mp3\", \"aac\", \"ogg\", \"wav\" y \"wma\"",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host_nginx}}/api/tasks",
+					"host": [
+						"{{host_nginx}}"
+					],
+					"path": [
+						"api",
+						"tasks"
+					]
+				},
+				"description": "Provea el archivo de audio a convertir, y en minúsculas el formato destino de conversión. Tanto el origen como el destino puede ser .mp3, .aac, .ogg, .wav y .wma; esta es una tarea asíncrona, consulte el endpoint Consultar File para descargar el archivo convertido. Consulte el estado de conversión en endpoint Consultar una tarea."
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar lista de tareas",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjQ4MTcyMCwianRpIjoiZDY0MDg1MWQtMmMxNC00NjhjLTgzZDMtYTA0ZTBjNzI0YmQxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MSwibmJmIjoxNjY2NDgxNzIwLCJleHAiOjE2NjY0ODI2MjB9.UJLEAtQyzcVqrBQOUZZwqHFD0b_xUne9C41Nn_5uueQ"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{host_nginx}}/api/tasks?order=1&max=1",
+					"host": [
+						"{{host_nginx}}"
+					],
+					"path": [
+						"api",
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "order",
+							"value": "1",
+							"description": "SI es 0, ordena descendentemente, si 1 es ascendentemente"
+						},
+						{
+							"key": "max",
+							"value": "1",
+							"description": "Cantidad máxima de tareas a consultar"
+						}
+					]
+				},
+				"description": "Entrega la lista de tareas de conversión que han sido encoladas en el sistema."
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar una tarea",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjQ4MzQ5MiwianRpIjoiYzUxYTRlMTQtOTBiMS00Njc0LTk5ZmEtMDUzZTkxYjA3MGNjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MSwibmJmIjoxNjY2NDgzNDkyLCJleHAiOjE2NjY0ODQzOTJ9.4G10VNHcBeNVUv33ZeBEb8LRcZ2TvmZc26uJMqOq5RQ"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{host_nginx}}/api/tasks/:taskId",
+					"host": [
+						"{{host_nginx}}"
+					],
+					"path": [
+						"api",
+						"tasks",
+						":taskId"
+					],
+					"variable": [
+						{
+							"key": "taskId",
+							"value": ""
+						}
+					]
+				},
+				"description": "Permite mediante el id de task, consultar el estado del task asociado."
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar tarea con formato",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjQ4NTgxMSwianRpIjoiMzM1Y2IzM2EtZTk5NC00ZDg0LWE5ZTktYWI3MjJjZGM1YjY1IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MSwibmJmIjoxNjY2NDg1ODExLCJleHAiOjE2NjY0ODY3MTF9.12JDFrjvAgGygBQK_388OOLyvw7xWnU_MAv94zmIZCg"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "newFormat",
+							"value": "acc",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host_nginx}}/api/tasks/:taskId",
+					"host": [
+						"{{host_nginx}}"
+					],
+					"path": [
+						"api",
+						"tasks",
+						":taskId"
+					],
+					"variable": [
+						{
+							"key": "taskId",
+							"value": ""
+						}
+					]
+				},
+				"description": "Permite, si no ha terminado la tarea de conversión específica, cambiar el formato destino del audio a convertir. Soporta los mismos formatos de encolado (.mp3, .aac, .ogg, .wav, wma)"
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar tarea",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjQ5NDYwMCwianRpIjoiOWU2ZDYyNTgtOGIzNy00Njc0LTk3YTgtMmRkMjcyYmExODg1IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MSwibmJmIjoxNjY2NDk0NjAwLCJleHAiOjE2NjY0OTU1MDB9.R9zy0q4Ul5wU5LFZYKkUxeVa4fDwGZ6mKthCF3pHFFI"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{host_nginx}}/api/tasks/:taskId",
+					"host": [
+						"{{host_nginx}}"
+					],
+					"path": [
+						"api",
+						"tasks",
+						":taskId"
+					],
+					"variable": [
+						{
+							"key": "taskId",
+							"value": ""
+						}
+					]
+				},
+				"description": "Permite cancelar una tarea de conversión (borrar archivo y remueve task de Worker), y eliminar su registro asociado en base de datos."
+			},
+			"response": []
+		},
+		{
+			"name": "Consultar File",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY2NjQ5OTE2MywianRpIjoiNjEyYzI1MzMtYTAzOS00NDFmLWE2NzgtMWE3YTc1OTMyZWUxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MSwibmJmIjoxNjY2NDk5MTYzLCJleHAiOjE2NjY1MDAwNjN9.7-CgbV29HjazvRbfhyahw62l5Uhpau7Bd79dPeuA14Q"
+					},
+					{
+						"key": "Content-Type",
+						"value": "multipart/form-data"
+					},
+					{
+						"key": "",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{host_nginx}}/api/files/:fileName",
+					"host": [
+						"{{host_nginx}}"
+					],
+					"path": [
+						"api",
+						"files",
+						":fileName"
+					],
+					"variable": [
+						{
+							"key": "fileName",
+							"value": ""
+						}
+					]
+				},
+				"description": "Permite descargar un archivo, si el estado es \"processed\" , entregando el nombre de archivo (usar servicios GET de tarea si no recuerda el nombre)"
+			},
+			"response": []
+		}
+	]
+}
