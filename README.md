@@ -37,3 +37,4 @@ Si es necesario acceder a la base de datos podemos ejecutar el comando
 ```bash
   docker-compose exec db psql --username=postgres --dbname=conversion_prod
 ```
+Para ejecutar las pruebas de carga referenciar https://github.com/edgar-melara-uniandes/proyecto_cloud/blob/main/services/test/README.md
