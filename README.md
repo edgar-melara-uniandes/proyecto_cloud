@@ -11,6 +11,7 @@ El objectivo de la applicacion es convertir archivos de audio a diferentes forma
 - Postgres: Manejador de base de datos
 - Celery: Creacion de tareas que se ejecutan de forma asincrona
 - Redis: Para manejar la cola de tareas entregadas por el API
+- FFMPEG: Libreria para la conversion de archivos de audio
 
 
 
