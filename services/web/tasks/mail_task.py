@@ -4,9 +4,10 @@ import smtplib
 import smtplib
 
 def send_mail(file_name, target_format, task_id):
+    # os.environ.get('MY_ENVIRONMENT_VARIABLE') # trae variable de entorno MY_ENVIRONMENT_VARIABLE
     try:
-        sender = "putAMailHere@amail.net"
-        receivers = ['c.toros@unianndes.edu.co']
+        sender = "putAMailHere@amail.net" # Correo remitente
+        receivers = ['c.toros@unianndes.edu.co'] # poner destinatario(s) aca
 
         message = EmailMessage()
         message['From'] = sender
