@@ -19,7 +19,7 @@ def send_mail(file_name, target_format, task_id):
         smtp= smtplib.SMTP('smtp.sendgrid.net', 587) # smtplib.SMTP_SSL('smtp.gmail.com', 465) alternativa, menos seguro SSL que TLS
         smtp.ehlo()
         smtp.starttls() # requerido en modo TLS
-        smtp.login('apikey', "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") # en caso de GMail, usar un app password (requiere habilitar 2FA)
+        smtp.login('apikey', "sendgridAPIKey") # en caso de GMail, usar un app password (requiere habilitar 2FA)
         smtp.send_message(message)
     except Exception as e:
         print("Error al enviar correo")
