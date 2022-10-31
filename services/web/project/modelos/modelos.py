@@ -6,7 +6,7 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 db = SQLAlchemy()
 
-class User(db.Model):
+class Appuser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True)
     email = db.Column(db.String(50))
@@ -24,7 +24,7 @@ class Task(db.Model):
     status = db.Column(db.String(50))
     folder = db.Column(db.String(500))
     file_name = db.Column(db.String(50))
-    id_user =  db.Column(db.Integer, db.ForeignKey('user.id'))
+    id_user =  db.Column(db.Integer, db.ForeignKey('appuser.id'))
     
     
    
@@ -34,9 +34,9 @@ class TaskSchema(SQLAlchemyAutoSchema):
         include_relationships = True
         load_instance = True
         
-class UserSchema(SQLAlchemyAutoSchema):
+class AppuserSchema(SQLAlchemyAutoSchema):
     class Meta:
-        model = User
+        model = Appuser
         include_relationships = True
         load_instance = True
     tasks = fields.List(fields.Nested(TaskSchema()))
