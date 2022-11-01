@@ -142,6 +142,10 @@ class VistaTask(Resource):
         db.session.delete(task)
         db.session.commit()
         return {"message": "La tarea ha sido eliminada", "status": "success"}, 204
+    
+class VistaMedia(Resource): 
+    def get(self, filename):
+        return send_from_directory(UPLOAD_FOLDER, filename)   
 class VistaFile(Resource):
     @jwt_required()
     def get(self, filename):
