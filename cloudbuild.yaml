@@ -1,6 +1,6 @@
 #cloudbuild.yaml
 steps:
-- name: 'docker/compose.prod:3.8'
+- name: 'docker/compose:3.8'
   args: ['up', '-d', '--build']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['tag', 'workspace_app:latest', 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA']
