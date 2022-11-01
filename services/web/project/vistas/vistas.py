@@ -17,7 +17,7 @@ load_dotenv()
 user_schema = AppuserSchema()
 task_schema = TaskSchema()
 list_task_schema = TaskSchema(many=True)
-UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER')}/project/media"))
+UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER', '/usr/src/app')}/project/media"))
 BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
@@ -37,7 +37,7 @@ class VistaRegistro(Resource):
         if request.json['password1'] != request.json['password2']:
             return {"mensaje": "Las contraseñas deben ser iguales", "status": "fail"}, 404
         
-        nuevo_usuario = User(username=request.json['username'], email=request.json['email'], password=request.json['password1'])
+        nuevo_usuario = Appuser(username=request.json['username'], email=request.json['email'], password=request.json['password1'])
         db.session.add(nuevo_usuario)
         db.session.commit()
         token_de_acceso = create_access_token(identity=nuevo_usuario.id)
@@ -142,6 +142,10 @@ class VistaTask(Resource):
         db.session.delete(task)
         db.session.commit()
         return {"message": "La tarea ha sido eliminada", "status": "success"}, 204
+    
+class VistaMedia(Resource): 
+    def get(self, filename):
+        return send_from_directory(UPLOAD_FOLDER, filename)   
 class VistaFile(Resource):
     @jwt_required()
     def get(self, filename):

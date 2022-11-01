@@ -1,10 +1,9 @@
 from project import create_app
 import logging
-
 from flask_restful import Api
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from .vistas import VistaRegistro, VistaLogin, VistaTasks, VistaTask, VistaFile, HelloWorld, VistaUpdateConverted
+from .vistas import VistaRegistro, VistaLogin, VistaTasks, VistaTask, VistaFile, HelloWorld, VistaUpdateConverted, VistaMedia
 from .modelos import db
 
 app = create_app("default")
@@ -24,6 +23,8 @@ api.add_resource(VistaTasks,'/api/tasks')
 api.add_resource(VistaTask,'/api/tasks/<int:id_task>')
 api.add_resource(VistaFile,'/api/files/<string:filename>')
 api.add_resource(VistaUpdateConverted,'/api/converted')
+api.add_resource(VistaMedia, "/media/<path:filename>")
 
 
 jwt = JWTManager(app)
+

@@ -3,7 +3,9 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import fields, Schema
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-
+""" from connection_gcp import connect_with_connector """
+""" from app import db """
+    
 db = SQLAlchemy()
 
 class Appuser(db.Model):
