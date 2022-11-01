@@ -6,22 +6,8 @@ from marshmallow import fields, Schema
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from connection_gcp import connect_with_connector
 """ from app import db """
-
-def init_connection_pool() -> sqlalchemy.engine.base.Engine:
-    return connect_with_connector()
-    raise ValueError(
-        "Missing database connection type. Please define one of INSTANCE_HOST, INSTANCE_UNIX_SOCKET, or INSTANCE_CONNECTION_NAME"
-    )
-db = None
-# init_db lazily instantiates a database connection pool. Users of Cloud Run or
-# App Engine may wish to skip this lazy instantiation and connect as soon
-# as the function is loaded. This is primarily to help testing.
-@app.before_first_request
-def init_db() -> sqlalchemy.engine.base.Engine:
-    global db
-    db = init_connection_pool()
     
-""" db = SQLAlchemy() """
+db = SQLAlchemy()
 
 class Appuser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
