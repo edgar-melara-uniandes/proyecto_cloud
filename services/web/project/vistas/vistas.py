@@ -37,7 +37,7 @@ class VistaRegistro(Resource):
         if request.json['password1'] != request.json['password2']:
             return {"mensaje": "Las contraseñas deben ser iguales", "status": "fail"}, 404
         
-        nuevo_usuario = User(username=request.json['username'], email=request.json['email'], password=request.json['password1'])
+        nuevo_usuario = Appuser(username=request.json['username'], email=request.json['email'], password=request.json['password1'])
         db.session.add(nuevo_usuario)
         db.session.commit()
         token_de_acceso = create_access_token(identity=nuevo_usuario.id)
