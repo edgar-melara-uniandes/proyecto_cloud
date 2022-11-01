@@ -2,7 +2,7 @@ from email.message import EmailMessage
 import smtplib
 import os
 
-def send_mail(file_name, target_format, task_id):
+def send_mail(task_id, file_name, target_format):
     sendgrid_user = os.environ.get('SENDGRID_USER') # trae variable de entorno MY_ENVIRONMENT_VARIABLE
     sendgrid_api_key = os.environ.get('SENDGRID_API_KEY') # trae variable de entorno MY_ENVIRONMENT_VARIABLE
     try:
