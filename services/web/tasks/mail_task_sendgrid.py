@@ -1,11 +1,12 @@
 from email.message import EmailMessage
 import smtplib
-
+import os
 
 def send_mail(file_name, target_format, task_id):
-    # os.environ.get('MY_ENVIRONMENT_VARIABLE') # trae variable de entorno MY_ENVIRONMENT_VARIABLE
+    sendgrid_user = os.environ.get('SENDGRID_USER') # trae variable de entorno MY_ENVIRONMENT_VARIABLE
+    sendgrid_api_key = os.environ.get('SENDGRID_API_KEY') # trae variable de entorno MY_ENVIRONMENT_VARIABLE
     try:
-        sender = "c.toros.uniandes@gmail.com" # Correo remitente con sendgrid
+        sender = sendgrid_user # Correo remitente con sendgrid
         receivers = ['c.toros@unianndes.edu.co'] # poner destinatario(s) aca
 
         message = EmailMessage()
@@ -19,11 +20,9 @@ def send_mail(file_name, target_format, task_id):
         smtp= smtplib.SMTP('smtp.sendgrid.net', 587) # smtplib.SMTP_SSL('smtp.gmail.com', 465) alternativa, menos seguro SSL que TLS
         smtp.ehlo()
         smtp.starttls() # requerido en modo TLS
-        smtp.login('apikey', "sendgridAPIKey") # en caso de GMail, usar un app password (requiere habilitar 2FA)
+        smtp.login('apikey', sendgrid_api_key) # en caso de GMail, usar un app password (requiere habilitar 2FA)
         smtp.send_message(message)
     except Exception as e:
         print("Error al enviar correo")
         print(str(e))
     
-
-send_mail("audio_sample.mp3", "MP3", "abcde123")
