@@ -10,11 +10,11 @@ from flask import request, send_file, send_from_directory
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from project.modelos import db, User, Task, UserSchema, TaskSchema
+from project.modelos import db, Appuser, Task, AppuserSchema, TaskSchema
 
 load_dotenv() 
 
-user_schema = UserSchema()
+user_schema = AppuserSchema()
 task_schema = TaskSchema()
 list_task_schema = TaskSchema(many=True)
 UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER')}/project/media"))
@@ -30,8 +30,8 @@ ALLOWED_EXTENSIONS = {"mp3", "acc", "ogg", "wav","wma"}
 class VistaRegistro(Resource):
 
     def post(self):
-        usuario_viejo = User.query.filter(User.username == request.json["username"]).first()
-        email_viejo = User.query.filter(User.email == request.json["email"]).first()
+        usuario_viejo = Appuser.query.filter(Appuser.username == request.json["username"]).first()
+        email_viejo = Appuser.query.filter(Appuser.email == request.json["email"]).first()
         if usuario_viejo is not None or email_viejo is not None:
             return {"mensaje": "El usuario o correo electronico ya estan registrados", "status": "fail"}, 404
         if request.json['password1'] != request.json['password2']:
@@ -46,8 +46,8 @@ class VistaRegistro(Resource):
 class VistaLogin(Resource):
 
     def post(self):
-        usuario = User.query.filter(User.username == request.json["username"],
-                                       User.password == request.json["password"]).first()
+        usuario = Appuser.query.filter(Appuser.username == request.json["username"],
+                                       Appuser.password == request.json["password"]).first()
         db.session.commit()
         if usuario is None:
             return {"mensaje": "Revise los datos e intente nuevamente", "status": "fail"}, 404
