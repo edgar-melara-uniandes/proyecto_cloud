@@ -1,7 +1,6 @@
 from email.policy import default
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-import sqlalchemy
 from marshmallow import fields, Schema
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 """ from connection_gcp import connect_with_connector """
