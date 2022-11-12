@@ -10,6 +10,7 @@ import subprocess
 from posixpath import splitext
 from pydub import AudioSegment
 from cloud_storage_client import CloudStorageClient
+from tasks.modelos import db, Task
 
 BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
@@ -34,7 +35,6 @@ def ejecutar_conversion():
     #convertir_lotes_musica()
     # convert_audio_file(received_file_path,audio_format)
     return "Music converted :)"
-
 
 def convert_audio_file(response):
     file_name = response['fileName'] #nombre archivo sin extension
@@ -76,7 +76,15 @@ def convert_audio_file(response):
     # sound.export(file_name+"_conv.wma", format="wma") no funciona
 
 def updated_db(taskId, output):
-    send = {"taskId":taskId, "output": output}
-    headers = {'Content-Type': 'application/json'}
-    result = requests.post(ENDPOINT,data=json.dumps(send),headers=headers)
-    print(result.content)
+    task = Task.query.filter(Task.folder == taskId).one_or_none()
+    if task is None:
+        return {"message": "No se encontro la tarea", "status": "fail"}, 404
+    task.path_output = request.json['output']
+    task.date_updated = datetime.datetime.now()
+    task.status = "processed"
+    db.session.commit()
+    return {"message": "Actualización realizada", "status": "success"}, 200
+    # send = {"taskId":taskId, "output": output}
+    # headers = {'Content-Type': 'application/json'}
+    # result = requests.post(ENDPOINT,data=json.dumps(send),headers=headers)
+    # print(result.content)
