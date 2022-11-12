@@ -16,7 +16,7 @@ Instancia con worker y base de datos redis
  ```
  - ejecutar contenedor de worker con el siguiente comando:
  ```bash
-sudo docker run -d --name worker-cloud-7 --link redis-stack-server  lsolier/worker-cloud:7.0
+sudo docker run -d --name worker-cloud-7 --link redis-stack-server  lsolier/worker-cloud:8.0
  ```
  - verificar que ambos contenedores se encuentran en ejecucion
  ```bash
