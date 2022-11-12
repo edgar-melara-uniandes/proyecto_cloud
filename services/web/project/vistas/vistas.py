@@ -12,13 +12,14 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from project.modelos import db, Appuser, Task, AppuserSchema, TaskSchema
+from project.vistas.cloud_storage_client import CloudStorageClient
 
 load_dotenv() 
 
 user_schema = AppuserSchema()
 task_schema = TaskSchema()
 list_task_schema = TaskSchema(many=True)
-UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER', '/usr/src/app')}/project/media"))
+UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER', '/usr/src/app')}/tmp"))
 BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
@@ -191,21 +192,25 @@ class HelloWorld(Resource):
 def uploadFile(files, identity, folder):
     response = dict()
     file = files['fileName']
+    
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        path_user = str(UPLOAD_FOLDER + "/" + str(identity)) 
-        path_task = path_user + "/" + str(folder)
-        if not os.path.exists(path_user): # cambiar
-            os.makedirs(path_user) # cambiar
-        if not os.path.exists(path_task):
-            os.makedirs(path_task + "/upload")
-            os.makedirs(path_task + "/converted")
-        file_path = os.path.join(path_task + "/upload", filename)
+        path_task = str(UPLOAD_FOLDER + "/" + str(folder)) 
+        if not os.path.exists(path_task): # cambiar
+            os.makedirs(path_task)
+        destination_blob_name = f'{identity}/{folder}/upload/{filename}'
+        tmp_file = os.path.join(path_task, filename)
+        #CloudStorage    
+        cloud_storage_client = CloudStorageClient()
+        cloud_storage_client.upload_file(tmp_file, destination_blob_name)
+        cloud_storage_client.verify_if_file_exist(destination_blob_name)
+        file_path = destination_blob_name
         file.save(file_path)
         response["status"] = True 
         response["file_path"] = file_path
         response["format_input"] = file.filename.rsplit('.', 1)[1].lower()
         response["file_name"] = file.filename.rsplit('.', 1)[0].lower()
+        shutil.rmtree(tmp_file)
     return response
          
 def allowed_file(filename):
