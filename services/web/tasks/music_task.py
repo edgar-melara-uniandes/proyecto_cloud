@@ -1,15 +1,16 @@
 import os
 import time
-import requests
+#import requests
 import json
 import uuid
-import util
+import tasks.util as Util
+import datetime
 
 from celery import Celery
 import subprocess
 from posixpath import splitext
 from pydub import AudioSegment
-from cloud_storage_client import CloudStorageClient
+from tasks.cloud_storage_client import CloudStorageClient
 from tasks.modelos import db, Task
 
 BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
@@ -20,20 +21,9 @@ ENDPOINT = str(os.environ.get("ENDPOINT_CONVERTED_DB", "http://127.0.0.1:1337/ap
 
 @celery_app.task(name='music_conversions')
 def add_music_conversion_request(response):
-
     print("Adding request to queue, musicID: " + str(response['userId']))
-    # time.sleep(60)
     convert_audio_file(response)
-    #request endpoint de finalizar conversion
-    #almacenar_solicitud_bd() or convertir_musica()
     print("After 60 seconds the request was attended")
-    return "Music converted :)"
-
-@celery_app.task(name='batch_music_conversion')
-def ejecutar_conversion():
-    time.sleep(60)
-    #convertir_lotes_musica()
-    # convert_audio_file(received_file_path,audio_format)
     return "Music converted :)"
 
 def convert_audio_file(response):
@@ -45,7 +35,7 @@ def convert_audio_file(response):
     task_id = response['taskId']
 
     temp_path = str(uuid.uuid4())
-    temporal_file_destination = util.create_temporal_file_destination(temp_path, file_name, format_input)
+    temporal_file_destination = Util.create_temporal_file_destination(temp_path, file_name, format_input)
 
     cloud_storage_client = CloudStorageClient()
     cloud_storage_client.download_file(audio_file_path, temporal_file_destination)
@@ -63,7 +53,7 @@ def convert_audio_file(response):
         cloud_storage_client.upload_file(output, destination_blob_name)
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
         updated_db(task_id, output)
-        util.delete_temporal_path(temp_path)
+        Util.delete_temporal_path(temp_path)
     # alternativas:
     # subprocesscall
     # os.system("ffmpeg -i audio_file_a.mp3 audio_file_a.aac") # no recomendado
@@ -79,7 +69,7 @@ def updated_db(taskId, output):
     task = Task.query.filter(Task.folder == taskId).one_or_none()
     if task is None:
         return {"message": "No se encontro la tarea", "status": "fail"}, 404
-    task.path_output = request.json['output']
+    task.path_output = output
     task.date_updated = datetime.datetime.now()
     task.status = "processed"
     db.session.commit()
