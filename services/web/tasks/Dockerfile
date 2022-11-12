@@ -20,10 +20,6 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY ./__init__.py ./tasks
-COPY ./music_task.py ./tasks
-COPY ./util.py ./tasks
-COPY ./cloud_storage_client.py ./tasks
-COPY ./modelos/ ./tasks
+COPY . ./tasks
 
 CMD celery -A tasks.music_task worker --loglevel=info
