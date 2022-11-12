@@ -170,3 +170,4 @@ Temporary Items
 
 *.json_credential_file
 /services/web/tasks/tmp/*
+*.mp3
