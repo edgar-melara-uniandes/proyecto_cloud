@@ -2,6 +2,7 @@ version: '3.8'
 services:
   web:
     build:
+      context: ./services/web
       dockerfile: Dockerfile.prod
     #command: gunicorn --bind 127.0.0.1:80 manage:app
     command: flask run -p 80 manage:app
