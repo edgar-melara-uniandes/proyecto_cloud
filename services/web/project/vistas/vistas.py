@@ -160,6 +160,7 @@ class VistaFile(Resource):
             """ mimetype="application/octet-stream", """
             return send_file(task.path_input,  as_attachment=True) 
 class VistaUpdateConverted(Resource):
+    #logica para pegarle a la BD - IMPLEMENTAR EN WORKER
     def post(self):
         task = Task.query.filter(Task.folder == request.json['taskId']).one_or_none()
         if task is None:
