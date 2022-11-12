@@ -174,11 +174,17 @@ class HelloWorld(Resource):
 
         storage_client = storage.Client()
         bucket = storage_client.bucket('software_nube_202215g6')
-        blob = bucket.blob('mi_blob')
-        with blob.open("w") as f:
+        try:
+            blob = bucket.blob('mi_blob')
+            blob.upload_from_file_name('texto.txt')
+            return {"hello":"world"}, 200
+        except Exception as e:
+            print(e)
+            return {"not":"found"}, 404
+        '''with blob.open("w") as f:
             f.write("Hello world")
         with blob.open("r") as f:
-            print(f.read())
+            print(f.read())'''
         return {"hello":"world"}, 200
 
 def uploadFile(files, identity, folder):
