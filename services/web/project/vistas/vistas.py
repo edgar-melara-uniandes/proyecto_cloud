@@ -3,6 +3,7 @@ import os
 import shutil
 import uuid
 import datetime
+from google.cloud import storage
 from celery import Celery
 from celery.result import AsyncResult
 from flask_restful import Resource
@@ -170,6 +171,14 @@ class VistaUpdateConverted(Resource):
         return {"message": "Actualización realizada", "status": "success"}, 200
 class HelloWorld(Resource):
     def get(self):
+
+        storage_client = storage.Client()
+        bucket = storage_client.bucket('software_nube_202215g6')
+        blob = bucket.blob('mi_blob')
+        with blob.open("w") as f:
+            f.write("Hello world")
+        with blob.open("r") as f:
+            print(f.read())
         return {"hello":"world"}, 200
 
 def uploadFile(files, identity, folder):
@@ -177,10 +186,10 @@ def uploadFile(files, identity, folder):
     file = files['fileName']
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        path_user = str(UPLOAD_FOLDER + "/" + str(identity))
+        path_user = str(UPLOAD_FOLDER + "/" + str(identity)) 
         path_task = path_user + "/" + str(folder)
-        if not os.path.exists(path_user):
-            os.makedirs(path_user)
+        if not os.path.exists(path_user): # cambiar
+            os.makedirs(path_user) # cambiar
         if not os.path.exists(path_task):
             os.makedirs(path_task + "/upload")
             os.makedirs(path_task + "/converted")
