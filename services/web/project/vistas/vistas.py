@@ -128,8 +128,8 @@ class VistaTask(Resource):
         if task is None:
             return {"message": "No se encontro la tarea"}
         if task.path_output != None:
-            #borrado cloud storage
-            os.remove(task.path_output)
+            """borrado cloud storage"""
+            cloud_storage_client.delete_blob(task.path_output)
         task.format_output = request.form.get("newFormat")
         task.status = "uploaded"
         task.date_updated=datetime.datetime.now()
@@ -143,7 +143,7 @@ class VistaTask(Resource):
         if task is None:
             return {"message": "No se encontro la tarea"}
         if task.path_input != None:
-            #Borrado de cloud storage
+            """Borrado de cloud storage"""
             cloud_storage_client.delete_folder(str(identity) + "/" + task.folder)
         db.session.delete(task)
         db.session.commit()
@@ -176,20 +176,6 @@ class VistaUpdateConverted(Resource):
         return {"message": "Actualización realizada", "status": "success"}, 200
 class HelloWorld(Resource):
     def get(self):
-
-        storage_client = storage.Client()
-        bucket = storage_client.bucket('software_nube_202215g6')
-        try:
-            blob = bucket.blob('mi_blob')
-            blob.upload_from_file_name('texto.txt')
-            return {"hello":"world"}, 200
-        except Exception as e:
-            print(e)
-            return {"not":"found"}, 404
-        '''with blob.open("w") as f:
-            f.write("Hello world")
-        with blob.open("r") as f:
-            print(f.read())'''
         return {"hello":"world"}, 200
 
 def uploadFile(files, identity, folder):
@@ -203,9 +189,9 @@ def uploadFile(files, identity, folder):
             os.makedirs(path_task)
         destination_blob_name = f'{identity}/{folder}/upload/{filename}'
         tmp_file = os.path.join(path_task, filename)
-        #Guarda archivo en tmp
+        """Guarda archivo en tmp"""
         file.save(tmp_file)
-        #CloudStorage   
+        """CloudStorage""" 
         cloud_storage_client.upload_file(tmp_file, destination_blob_name)
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
         file_path = destination_blob_name

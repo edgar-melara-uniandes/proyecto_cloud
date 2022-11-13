@@ -24,6 +24,9 @@ class CloudStorageClient:
     
     def delete_folder(self, folder_name):
         self.__delete_folder(BUCKET_NAME, folder_name)
+        
+    def delete_blob(self, blob_name):
+        self.__delete_blob(BUCKET_NAME, blob_name)
 
     def __download_blob(self, bucket_name, source_blob_name, destination_file_name):
         """Downloads a blob from the bucket."""
@@ -86,3 +89,10 @@ class CloudStorageClient:
         blobs = list(bucket.list_blobs(prefix=folder_name))
         bucket.delete_blobs(blobs)
         print(f"Folder {folder_name} deleted.")
+    
+    def __delete_blob(self, bucket_name, blob_name):
+        """Deletes a blob from the bucket."""
+        bucket = self.storage_client.bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+        blob.delete()
+        print(f"Blob {blob_name} deleted.")
