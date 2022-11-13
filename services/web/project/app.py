@@ -3,8 +3,8 @@ import logging
 from flask_restful import Api
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from .vistas import VistaRegistro, VistaLogin, VistaTasks, VistaTask, VistaFile, HelloWorld, VistaUpdateConverted, VistaMedia
-from .modelos import db
+from project.vistas import VistaRegistro, VistaLogin, VistaTasks, VistaTask, VistaFile, HelloWorld, VistaUpdateConverted, VistaMedia
+from project.modelos import db
 
 app = create_app("default")
 logging.basicConfig(level=logging.DEBUG)
