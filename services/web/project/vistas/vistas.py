@@ -91,7 +91,7 @@ class VistaTasks(Resource):
         if not request.form.get("newFormat"):
             return {"message": "Debe agregar el formato de destino", "status":"fail"}, 404
         process_upload_file = uploadFile(request.files, identity, folder)
-        if process_upload_file['status']:
+        if process_upload_file['status'] is True:
             new_task = Task(date_created=datetime.datetime.now(),format_input=process_upload_file["format_input"], format_output=request.form.get("newFormat"), path_input=process_upload_file["file_path"], status="uploaded", id_user=identity, folder = str(folder), file_name=process_upload_file['file_name'])
             db.session.add(new_task)
             db.session.commit()
