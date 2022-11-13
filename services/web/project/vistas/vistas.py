@@ -200,6 +200,8 @@ def uploadFile(files, identity, folder):
         response["format_input"] = file.filename.rsplit('.', 1)[1].lower()
         response["file_name"] = file.filename.rsplit('.', 1)[0].lower()
         shutil.rmtree(path_task)
+    else:
+        response["status"] = False
     return response
          
 def allowed_file(filename):
