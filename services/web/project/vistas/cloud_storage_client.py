@@ -2,7 +2,7 @@
 from google.cloud import storage
 import os
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path_to_your_.json_credential_file"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./path_to_your_.json_credential_file"
 
 #Para desarrollo local reemplazar el nombre del BUCKET_NAME
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "music-converter-prueba-1")
