@@ -2,7 +2,7 @@ import os
 import uuid
 import tasks.util as Util
 import datetime
-import mail_task_sendgrid
+import tasks.mail_task_sendgrid as SengridMail
 
 from celery import Celery
 import subprocess
@@ -17,6 +17,7 @@ BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
 UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER')}/project/media"))
 ENDPOINT = str(os.environ.get("ENDPOINT_CONVERTED_DB", "http://127.0.0.1:1337/api/converted"))
+ENABLED_EMAIL = os.environ.get('ENABLED_EMAIL', 'false')
 
 @celery_app.task(name='music_conversions')
 def add_music_conversion_request(response):
@@ -56,8 +57,8 @@ def convert_audio_file(response):
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
         updated_db(task_id, destination_blob_name)
         Util.delete_temporal_path(temp_path)
-        if os.environ('ENABLED_EMAIL') == "true":
-           mail_task_sendgrid(f'{file_name}.{format_input}', target_format, task_id)
+        if ENABLED_EMAIL == "true":
+           SengridMail.send_mail(f'{file_name}.{format_input}', target_format, task_id)
 
 
 def updated_db(taskId, destination_blob_name):
