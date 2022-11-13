@@ -101,7 +101,7 @@ class VistaTasks(Resource):
                     "originType": new_task.format_input,
                     "targetType": new_task.format_output, 
                     "taskId": new_task.folder,
-                    "fileName": new_task.file_name,
+                    "fileName": new_task.file_name.replace(" ", "_"),
                     "formatInput": new_task.format_input                    
                 }
             args = (data,)
