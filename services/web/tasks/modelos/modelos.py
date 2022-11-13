@@ -1,9 +1,7 @@
 from datetime import datetime
 
-import db
+import tasks.db as db
 from sqlalchemy import Column, Integer, String, DateTime
-
-#db = SQLAlchemy()
 
     
 class Task(db.Base):
