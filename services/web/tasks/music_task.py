@@ -1,5 +1,3 @@
-from tasks import create_app
-
 import os
 import uuid
 import tasks.util as Util
@@ -10,9 +8,9 @@ import subprocess
 from posixpath import splitext
 from pydub import AudioSegment
 from tasks.cloud_storage_client import CloudStorageClient
-from tasks.modelos import db, Task
+from tasks.modelos import Task
 
-import db
+import tasks.db as db
 
 BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
@@ -56,14 +54,15 @@ def convert_audio_file(response):
         destination_blob_name = f'{user_id}/{task_id}/converted/{file_name}.{target_format}'
         cloud_storage_client.upload_file(output, destination_blob_name)
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
-        updated_db(task_id, output)
+        updated_db(task_id, destination_blob_name)
         Util.delete_temporal_path(temp_path)
 
-def updated_db(taskId, output):
-    task = Task.query.filter(Task.folder == taskId).one_or_none()
+def updated_db(taskId, destination_blob_name):
+    #task = Task.query.filter(Task.folder == taskId).one_or_none()
+    task = db.session.query(Task).filter(Task.folder == taskId).one_or_none()
     if task is None:
         return {"message": "No se encontro la tarea", "status": "fail"}, 404
-    task.path_output = output
+    task.path_output = destination_blob_name
     task.date_updated = datetime.datetime.now()
     task.status = "processed"
     db.session.commit()
