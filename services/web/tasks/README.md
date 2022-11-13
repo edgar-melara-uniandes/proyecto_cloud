@@ -10,13 +10,16 @@ Instancia con worker y base de datos redis
 
  - crear una maquina virtual en gcp 
  - instalar docker engine
+ ```bash
+ https://docs.docker.com/engine/install/ubuntu/
+ ```
  - ejecutar contenedor de redis con el siguiente comando:
  ```bash
  sudo docker run -d --name redis-stack-server -p 6379:6379 redis/redis-stack-server:latest
  ```
  - ejecutar contenedor de worker con el siguiente comando:
  ```bash
-sudo docker run -e BUCKET_NAME=software_nube_202215g6 -d --name worker-cloud-10 --link redis-stack-server  lsolier/worker-cloud:10.0
+sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=<ruta-de-service-account-json> -e DATABASE_URL=<url-database> -d --name worker-cloud-13 -v $(pwd)/service-account:/credential/service-account --link redis-stack-server  lsolier/worker-cloud:13.0
  ```
  - verificar que ambos contenedores se encuentran en ejecucion
  ```bash

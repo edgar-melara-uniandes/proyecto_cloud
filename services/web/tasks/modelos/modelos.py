@@ -1,30 +1,41 @@
-from email.policy import default
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
-from marshmallow import fields, Schema
-from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-""" from connection_gcp import connect_with_connector """
-""" from app import db """
+
+import db
+from sqlalchemy import Column, Integer, String, DateTime
+
+#db = SQLAlchemy()
+
     
-db = SQLAlchemy()
-    
-class Task(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date_created = db.Column(db.DateTime, default=datetime.now())
-    date_updated = db.Column(db.DateTime, default=datetime.now())
-    format_input = db.Column(db.String(50))
-    format_output = db.Column(db.String(50))
-    path_input = db.Column(db.String(500))
-    path_output = db.Column(db.String(500))
-    status = db.Column(db.String(50))
-    folder = db.Column(db.String(500))
-    file_name = db.Column(db.String(50))
-    id_user =  db.Column(db.Integer, db.ForeignKey('appuser.id'))
-    
-    
-   
-class TaskSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = Task
-        include_relationships = True
-        load_instance = True
+class Task(db.Base):
+    __tablename__ = 'task'
+
+    id = Column(Integer, primary_key=True)
+    date_created = Column(DateTime, default=datetime.now())
+    date_updated = Column(DateTime, default=datetime.now())
+    format_input = Column(String(50))
+    format_output = Column(String(50))
+    path_input = Column(String(500))
+    path_output = Column(String(500))
+    status = Column(String(50))
+    folder = Column(String(500))
+    file_name = Column(String(50))
+    id_user =  Column(Integer)
+
+    def __init__(self, date_created, date_updated, format_input, format_output, path_input, path_output, status, folder, file_name, id_user):
+        self.date_created = date_created
+        self.date_updated = date_updated
+        self.format_input = format_input
+        self.format_output = format_output
+        self.path_input = path_input
+        self.path_output = path_output
+        self.status = status
+        self.folder = folder
+        self.file_name = file_name
+        self.id_user = id_user
+
+    def __repr__(self):
+        return f'Task({self.id}, {self.file_name})'
+
+    def __str__(self):
+        return self.file_name
+
