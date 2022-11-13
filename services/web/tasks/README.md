@@ -18,8 +18,14 @@ Instancia con worker y base de datos redis
  sudo docker run -d --name redis-stack-server -p 6379:6379 redis/redis-stack-server:latest
  ```
  - ejecutar contenedor de worker con el siguiente comando:
+
+ Para envío de correo habilitado:
  ```bash
-sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=<ruta-de-service-account-json> -e DATABASE_URL=<url-database> -d --name worker-cloud-13 -v $(pwd)/service-account:/credential/service-account --link redis-stack-server  lsolier/worker-cloud:13.0
+sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=<ruta-de-service-account-json> -e DATABASE_URL=<url-database> -e ENABLED_EMAIL=true SENDGRID_API_KEY=your_sendgrid_api_key -d --name worker-cloud-13 -v $(pwd)/service-account:/credential/service-account --link redis-stack-server  lsolier/worker-cloud:13.0
+ ```
+ Para envío de correo deshabilitado:
+ ```bash
+sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=<ruta-de-service-account-json> -e DATABASE_URL=<url-database> -e ENABLED_EMAIL=false -d --name worker-cloud-13 -v $(pwd)/service-account:/credential/service-account --link redis-stack-server  lsolier/worker-cloud:13.0
  ```
  - verificar que ambos contenedores se encuentran en ejecucion
  ```bash

@@ -2,11 +2,11 @@ import os
 import uuid
 import tasks.util as Util
 import datetime
+import mail_task_sendgrid
 
 from celery import Celery
 import subprocess
 from posixpath import splitext
-from pydub import AudioSegment
 from tasks.cloud_storage_client import CloudStorageClient
 from tasks.modelos import Task
 
@@ -56,9 +56,11 @@ def convert_audio_file(response):
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
         updated_db(task_id, destination_blob_name)
         Util.delete_temporal_path(temp_path)
+        if os.environ('ENABLED_EMAIL') == "true":
+           mail_task_sendgrid(f'{file_name}.{format_input}', target_format, task_id)
+
 
 def updated_db(taskId, destination_blob_name):
-    #task = Task.query.filter(Task.folder == taskId).one_or_none()
     task = db.session.query(Task).filter(Task.folder == taskId).one_or_none()
     if task is None:
         return {"message": "No se encontro la tarea", "status": "fail"}, 404
