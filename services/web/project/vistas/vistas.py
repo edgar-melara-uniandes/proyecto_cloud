@@ -29,7 +29,7 @@ cloud_storage_client = CloudStorageClient()
 def add_music_conversion_request(music_conversion):
     pass
 
-ALLOWED_EXTENSIONS = {"mp3", "acc", "ogg", "wav","wma"}
+ALLOWED_EXTENSIONS = {"mp3", "aac", "ogg", "wav","wma"}
 class VistaRegistro(Resource):
 
     def post(self):
