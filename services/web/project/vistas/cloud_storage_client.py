@@ -21,6 +21,9 @@ class CloudStorageClient:
 
     def verify_if_file_exist(self, blob_name):
         return self.__verify_blob(BUCKET_NAME, blob_name)
+    
+    def delete_folder(self, folder_name):
+        self.__delete_folder(BUCKET_NAME, folder_name)
 
     def __download_blob(self, bucket_name, source_blob_name, destination_file_name):
         """Downloads a blob from the bucket."""
@@ -76,3 +79,10 @@ class CloudStorageClient:
         print(
             f"File {source_file_name} uploaded to {destination_blob_name}."
         )
+    
+    def __delete_folder(self, bucket_name, folder_name):
+        bucket = self.storage_client.get_bucket(bucket_name)
+        """Delete object under folder"""
+        blobs = list(bucket.list_blobs(prefix=folder_name))
+        bucket.delete_blobs(blobs)
+        print(f"Folder {folder_name} deleted.")
