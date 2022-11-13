@@ -90,7 +90,7 @@ class VistaTasks(Resource):
             return {"message": "cargar un archivo en fileName", "status":"fail"}, 404
         if not request.form.get("newFormat"):
             return {"message": "Debe agregar el formato de destino", "status":"fail"}, 404
-        if validate_format_output(request.form.get("newFormat")):
+        if validate_format_output(request.form.get("newFormat")) is False:
             return {"message": "El formato que solicita convetir no es valido", "status":"fail"}, 404
         process_upload_file = uploadFile(request.files, identity, folder)
         if process_upload_file['status'] is True:
@@ -202,8 +202,6 @@ def uploadFile(files, identity, folder):
         response["format_input"] = file.filename.rsplit('.', 1)[1].lower()
         response["file_name"] = file.filename.rsplit('.', 1)[0].lower()
         shutil.rmtree(path_task)
-    else:
-        response["status"] = False
     return response
          
 def allowed_file(filename):
