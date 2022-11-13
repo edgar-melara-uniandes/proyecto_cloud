@@ -21,11 +21,11 @@ Instancia con worker y base de datos redis
 
  Para envío de correo habilitado:
  ```bash
-sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=<ruta-de-service-account-json> -e DATABASE_URL=<url-database> -e ENABLED_EMAIL=true SENDGRID_API_KEY=your_sendgrid_api_key -d --name worker-cloud-13 -v $(pwd)/service-account:/credential/service-account --link redis-stack-server  lsolier/worker-cloud:13.0
+sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=<ruta-de-service-account-json> -e DATABASE_URL=<url-database> -e ENABLED_EMAIL=true SENDGRID_API_KEY=your_sendgrid_api_key -d --name worker-cloud-prod -v $(pwd)/service-account:/credential/service-account --link redis-stack-server  lsolier/worker-cloud:latest
  ```
  Para envío de correo deshabilitado:
  ```bash
-sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=<ruta-de-service-account-json> -e DATABASE_URL=<url-database> -e ENABLED_EMAIL=false -d --name worker-cloud-13 -v $(pwd)/service-account:/credential/service-account --link redis-stack-server  lsolier/worker-cloud:13.0
+sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=<ruta-de-service-account-json> -e DATABASE_URL=<url-database> -e ENABLED_EMAIL=false -d --name worker-cloud-prod -v $(pwd)/service-account:/credential/service-account --link redis-stack-server  lsolier/worker-cloud:latest
  ```
  - verificar que ambos contenedores se encuentran en ejecucion
  ```bash
