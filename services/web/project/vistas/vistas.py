@@ -213,7 +213,7 @@ def uploadFile(files, identity, folder):
         response["file_path"] = file_path
         response["format_input"] = file.filename.rsplit('.', 1)[1].lower()
         response["file_name"] = file.filename.rsplit('.', 1)[0].lower()
-        shutil.rmtree(tmp_file)
+        #shutil.rmtree(tmp_file)
     return response
          
 def allowed_file(filename):
