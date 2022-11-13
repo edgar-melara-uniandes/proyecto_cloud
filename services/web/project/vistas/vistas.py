@@ -23,7 +23,7 @@ UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER', '/
 BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
-
+cloud_storage_client = CloudStorageClient()
 
 @celery_app.task(name = 'music_conversions')
 def add_music_conversion_request(music_conversion):
@@ -144,7 +144,7 @@ class VistaTask(Resource):
             return {"message": "No se encontro la tarea"}
         if task.path_input != None:
             #Borrado de cloud storage
-            shutil.rmtree(UPLOAD_FOLDER + "/" + str(identity) + "/" + task.folder)
+            cloud_storage_client.delete_folder(str(identity) + "/" + task.folder)
         db.session.delete(task)
         db.session.commit()
         return {"message": "La tarea ha sido eliminada", "status": "success"}, 204
@@ -205,8 +205,7 @@ def uploadFile(files, identity, folder):
         tmp_file = os.path.join(path_task, filename)
         #Guarda archivo en tmp
         file.save(tmp_file)
-        #CloudStorage    
-        cloud_storage_client = CloudStorageClient()
+        #CloudStorage   
         cloud_storage_client.upload_file(tmp_file, destination_blob_name)
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
         file_path = destination_blob_name
