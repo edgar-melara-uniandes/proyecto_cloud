@@ -24,6 +24,7 @@ BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
 BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
 
+
 @celery_app.task(name = 'music_conversions')
 def add_music_conversion_request(music_conversion):
     pass
@@ -127,6 +128,7 @@ class VistaTask(Resource):
         if task is None:
             return {"message": "No se encontro la tarea"}
         if task.path_output != None:
+            #borrado cloud storage
             os.remove(task.path_output)
         task.format_output = request.form.get("newFormat")
         task.status = "uploaded"
@@ -141,6 +143,7 @@ class VistaTask(Resource):
         if task is None:
             return {"message": "No se encontro la tarea"}
         if task.path_input != None:
+            #Borrado de cloud storage
             shutil.rmtree(UPLOAD_FOLDER + "/" + str(identity) + "/" + task.folder)
         db.session.delete(task)
         db.session.commit()
