@@ -203,17 +203,18 @@ def uploadFile(files, identity, folder):
             os.makedirs(path_task)
         destination_blob_name = f'{identity}/{folder}/upload/{filename}'
         tmp_file = os.path.join(path_task, filename)
+        #Guarda archivo en tmp
+        file.save(tmp_file)
         #CloudStorage    
         cloud_storage_client = CloudStorageClient()
         cloud_storage_client.upload_file(tmp_file, destination_blob_name)
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
         file_path = destination_blob_name
-        file.save(tmp_file)
         response["status"] = True 
         response["file_path"] = file_path
         response["format_input"] = file.filename.rsplit('.', 1)[1].lower()
         response["file_name"] = file.filename.rsplit('.', 1)[0].lower()
-        #shutil.rmtree(tmp_file)
+        shutil.rmtree(path_task)
     return response
          
 def allowed_file(filename):
