@@ -1,7 +1,6 @@
+from tasks import create_app
+
 import os
-import time
-#import requests
-import json
 import uuid
 import tasks.util as Util
 import datetime
@@ -12,6 +11,8 @@ from posixpath import splitext
 from pydub import AudioSegment
 from tasks.cloud_storage_client import CloudStorageClient
 from tasks.modelos import db, Task
+
+import db
 
 BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
@@ -40,30 +41,23 @@ def convert_audio_file(response):
     cloud_storage_client = CloudStorageClient()
     cloud_storage_client.download_file(audio_file_path, temporal_file_destination)
     
-    output = f'{temp_path}/converted/{file_name}.{target_format}'
-    destination_blob_name = f'{user_id}/{task_id}/converted/{file_name}.{target_format}'
-
+    output = f'{temp_path}/{file_name}.{target_format}'
+    
     try:
-        #convertir
         subprocess.call(["ffmpeg","-i", temporal_file_destination, output])
+        if os.path.exists(output):
+            print(f"Archivo convertido exitosamente en: {output}")
+        else:
+            print("Archivo no se llego a crear")
     except:
         print("Error publishing file in cloud storage")
         pass
     else:
+        destination_blob_name = f'{user_id}/{task_id}/converted/{file_name}.{target_format}'
         cloud_storage_client.upload_file(output, destination_blob_name)
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
         updated_db(task_id, output)
         Util.delete_temporal_path(temp_path)
-    # alternativas:
-    # subprocesscall
-    # os.system("ffmpeg -i audio_file_a.mp3 audio_file_a.aac") # no recomendado
-    
-    # pydub; limitaciones por formatos, aunque ffmpeg NO tiene dichas limitaciones
-    # sound = AudioSegment.from_file(audio_file_path,"mp3")
-    # sound.export(file_name+"_conv.wav", format="wav"), igual en mp3 y ogg
-    # excepciones:
-    # sound.export(file_name+"_conv.aac", format="adts")
-    # sound.export(file_name+"_conv.wma", format="wma") no funciona
 
 def updated_db(taskId, output):
     task = Task.query.filter(Task.folder == taskId).one_or_none()
@@ -74,7 +68,4 @@ def updated_db(taskId, output):
     task.status = "processed"
     db.session.commit()
     return {"message": "Actualización realizada", "status": "success"}, 200
-    # send = {"taskId":taskId, "output": output}
-    # headers = {'Content-Type': 'application/json'}
-    # result = requests.post(ENDPOINT,data=json.dumps(send),headers=headers)
-    # print(result.content)
+    
