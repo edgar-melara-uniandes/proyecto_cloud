@@ -208,7 +208,7 @@ def uploadFile(files, identity, folder):
         cloud_storage_client.upload_file(tmp_file, destination_blob_name)
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
         file_path = destination_blob_name
-        file.save(file_path)
+        file.save(tmp_file)
         response["status"] = True 
         response["file_path"] = file_path
         response["format_input"] = file.filename.rsplit('.', 1)[1].lower()
