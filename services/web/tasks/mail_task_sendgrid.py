@@ -26,5 +26,3 @@ def send_mail(file_name, target_format, task_id):
         print("Error al enviar correo")
         print(str(e))
     
-
-send_mail("audio_sample.mp3", "MP3", "abcde123")
