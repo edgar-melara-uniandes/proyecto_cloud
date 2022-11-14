@@ -167,3 +167,8 @@ Temporary Items
 *.icloud
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
+
+*.json_credential_file
+/services/web/tasks/tmp/*
+test2.mp3
+/services/**/test2.mp3

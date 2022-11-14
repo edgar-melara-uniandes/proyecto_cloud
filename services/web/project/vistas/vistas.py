@@ -3,6 +3,7 @@ import os
 import shutil
 import uuid
 import datetime
+from google.cloud import storage
 from celery import Celery
 from celery.result import AsyncResult
 from flask_restful import Resource
@@ -11,22 +12,24 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from project.modelos import db, Appuser, Task, AppuserSchema, TaskSchema
+from project.vistas.cloud_storage_client import CloudStorageClient
 
 load_dotenv() 
 
 user_schema = AppuserSchema()
 task_schema = TaskSchema()
 list_task_schema = TaskSchema(many=True)
-UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER', '/usr/src/app')}/project/media"))
+UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER', '/usr/src/app')}/tmp"))
 BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
 celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
+cloud_storage_client = CloudStorageClient()
 
 @celery_app.task(name = 'music_conversions')
 def add_music_conversion_request(music_conversion):
     pass
 
-ALLOWED_EXTENSIONS = {"mp3", "acc", "ogg", "wav","wma"}
+ALLOWED_EXTENSIONS = {"mp3", "aac", "ogg", "wav","wma"}
 class VistaRegistro(Resource):
 
     def post(self):
@@ -87,8 +90,10 @@ class VistaTasks(Resource):
             return {"message": "cargar un archivo en fileName", "status":"fail"}, 404
         if not request.form.get("newFormat"):
             return {"message": "Debe agregar el formato de destino", "status":"fail"}, 404
+        if validate_format_output(request.form.get("newFormat")) is False:
+            return {"message": "El formato que solicita convetir no es valido", "status":"fail"}, 404
         process_upload_file = uploadFile(request.files, identity, folder)
-        if process_upload_file['status']:
+        if process_upload_file['status'] is True:
             new_task = Task(date_created=datetime.datetime.now(),format_input=process_upload_file["format_input"], format_output=request.form.get("newFormat"), path_input=process_upload_file["file_path"], status="uploaded", id_user=identity, folder = str(folder), file_name=process_upload_file['file_name'])
             db.session.add(new_task)
             db.session.commit()
@@ -98,7 +103,8 @@ class VistaTasks(Resource):
                     "originType": new_task.format_input,
                     "targetType": new_task.format_output, 
                     "taskId": new_task.folder,
-                    "fileName": new_task.file_name
+                    "fileName": new_task.file_name.replace(" ", "_"),
+                    "formatInput": new_task.format_input                    
                 }
             args = (data,)
             task = add_music_conversion_request.apply_async(args)
@@ -124,7 +130,8 @@ class VistaTask(Resource):
         if task is None:
             return {"message": "No se encontro la tarea"}
         if task.path_output != None:
-            os.remove(task.path_output)
+            """borrado cloud storage"""
+            cloud_storage_client.delete_blob(task.path_output)
         task.format_output = request.form.get("newFormat")
         task.status = "uploaded"
         task.date_updated=datetime.datetime.now()
@@ -138,7 +145,8 @@ class VistaTask(Resource):
         if task is None:
             return {"message": "No se encontro la tarea"}
         if task.path_input != None:
-            shutil.rmtree(UPLOAD_FOLDER + "/" + str(identity) + "/" + task.folder)
+            """Borrado de cloud storage"""
+            cloud_storage_client.delete_folder(str(identity) + "/" + task.folder)
         db.session.delete(task)
         db.session.commit()
         return {"message": "La tarea ha sido eliminada", "status": "success"}, 204
@@ -175,26 +183,32 @@ class HelloWorld(Resource):
 def uploadFile(files, identity, folder):
     response = dict()
     file = files['fileName']
+    
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        path_user = str(UPLOAD_FOLDER + "/" + str(identity))
-        path_task = path_user + "/" + str(folder)
-        if not os.path.exists(path_user):
-            os.makedirs(path_user)
-        if not os.path.exists(path_task):
-            os.makedirs(path_task + "/upload")
-            os.makedirs(path_task + "/converted")
-        file_path = os.path.join(path_task + "/upload", filename)
-        file.save(file_path)
+        path_task = str(UPLOAD_FOLDER + "/" + str(folder)) 
+        if not os.path.exists(path_task): # cambiar
+            os.makedirs(path_task)
+        destination_blob_name = f'{identity}/{folder}/upload/{filename}'
+        tmp_file = os.path.join(path_task, filename)
+        """Guarda archivo en tmp"""
+        file.save(tmp_file)
+        """CloudStorage""" 
+        cloud_storage_client.upload_file(tmp_file, destination_blob_name)
+        cloud_storage_client.verify_if_file_exist(destination_blob_name)
+        file_path = destination_blob_name
         response["status"] = True 
         response["file_path"] = file_path
         response["format_input"] = file.filename.rsplit('.', 1)[1].lower()
         response["file_name"] = file.filename.rsplit('.', 1)[0].lower()
+        shutil.rmtree(path_task)
     return response
          
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def validate_format_output(format):
+    return format in ALLOWED_EXTENSIONS
 def listToString(s):
  
     # initialize an empty string
