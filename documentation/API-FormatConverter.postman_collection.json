@@ -34,9 +34,9 @@
 					"raw": "{\n\t\"username\":\"luis\",\n\t\"password1\": \"123\",\n\t\"password2\": \"123\",\n\t\"email\": \"luis@test.com\"\n}"
 				},
 				"url": {
-					"raw": "{{host_nginx}}/api/auth/signup",
+					"raw": "{{apihost}}/api/auth/signup",
 					"host": [
-						"{{host_nginx}}"
+						"{{apihost}}"
 					],
 					"path": [
 						"api",
@@ -76,9 +76,9 @@
 					"raw": "{\n\t\"username\":\"luis4\",\n\t\"password\": \"123\"\n\t\n}"
 				},
 				"url": {
-					"raw": "{{host_nginx}}/api/auth/login",
+					"raw": "{{apihost}}/api/auth/login",
 					"host": [
-						"{{host_nginx}}"
+						"{{apihost}}"
 					],
 					"path": [
 						"api",
@@ -127,9 +127,9 @@
 					]
 				},
 				"url": {
-					"raw": "{{host_nginx}}/api/tasks",
+					"raw": "{{apihost}}/api/tasks",
 					"host": [
-						"{{host_nginx}}"
+						"{{apihost}}"
 					],
 					"path": [
 						"api",
@@ -155,9 +155,9 @@
 					}
 				],
 				"url": {
-					"raw": "{{host_nginx}}/api/tasks?order=1&max=1",
+					"raw": "{{apihost}}/api/tasks?order=1&max=1",
 					"host": [
-						"{{host_nginx}}"
+						"{{apihost}}"
 					],
 					"path": [
 						"api",
@@ -195,9 +195,9 @@
 					}
 				],
 				"url": {
-					"raw": "{{host_nginx}}/api/tasks/:taskId",
+					"raw": "{{apihost}}/api/tasks/:taskId",
 					"host": [
-						"{{host_nginx}}"
+						"{{apihost}}"
 					],
 					"path": [
 						"api",
@@ -240,9 +240,9 @@
 					]
 				},
 				"url": {
-					"raw": "{{host_nginx}}/api/tasks/:taskId",
+					"raw": "{{apihost}}/api/tasks/:taskId",
 					"host": [
-						"{{host_nginx}}"
+						"{{apihost}}"
 					],
 					"path": [
 						"api",
@@ -275,9 +275,9 @@
 					}
 				],
 				"url": {
-					"raw": "{{host_nginx}}/api/tasks/:taskId",
+					"raw": "{{apihost}}/api/tasks/:taskId",
 					"host": [
-						"{{host_nginx}}"
+						"{{apihost}}"
 					],
 					"path": [
 						"api",
@@ -315,9 +315,9 @@
 					}
 				],
 				"url": {
-					"raw": "{{host_nginx}}/api/files/:fileName",
+					"raw": "{{apihost}}/api/files/:fileName",
 					"host": [
-						"{{host_nginx}}"
+						"{{apihost}}"
 					],
 					"path": [
 						"api",
