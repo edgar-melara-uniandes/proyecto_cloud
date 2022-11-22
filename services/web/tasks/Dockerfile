@@ -15,6 +15,8 @@ ENV ENDPOINT_CONVERTED_DB=http://34.27.167.223/api/converted
 ENV BUCKET_NAME=music-converter-prueba-1
 ENV GOOGLE_APPLICATION_CREDENTIALS=default
 ENV DATABASE_URL=default
+ENV GCP_PROJECT_NAME=default
+ENV TARGET_SUBSCRIPTION=default
 
 # install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg
