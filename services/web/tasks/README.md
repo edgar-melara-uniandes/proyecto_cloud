@@ -3,19 +3,15 @@
 
 ### Descripción
 
-Instancia worker con celery y base de datos redis
+Instancia Worker migrada a Google Cloud Pub/Sub, suscriptor
 
 
 ## Pasos para instancia el worker en una maquina virtual de GCP
 
- - crear una maquina virtual en gcp 
- - instalar docker engine
+ - Crear una máquina virtual en GCP
+ - Instalar docker engine
  ```bash
  https://docs.docker.com/engine/install/ubuntu/
- ```
- - ejecutar contenedor de redis con el siguiente comando:
- ```bash
- sudo docker run -d --name redis-stack-server -p 6379:6379 redis/redis-stack-server:latest
  ```
  - ejecutar contenedor de worker con el siguiente comando:
 
@@ -42,5 +38,5 @@ sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CR
  ```
  
  #### *Opcional
- - Si desea acceder al worker desde una red externa debe crear una regla de firewall para exponer el puerto 6379, y poder recibir peticiones.
+ - Ahora si publica mensajes en el topico creado para el proyecto (converter-topic) puede crear tareas de encolado
 
