@@ -24,4 +24,4 @@ RUN pip install -r requirements.txt
 
 COPY . ./tasks
 
-CMD celery -A tasks.music_task worker --loglevel=info
+CMD python -m tasks.music_task.py
