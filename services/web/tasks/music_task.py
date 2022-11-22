@@ -71,7 +71,8 @@ def convert_audio_file(response):
         destination_blob_name = f'{user_id}/{task_id}/converted/{file_name}.{target_format}'
         cloud_storage_client.upload_file(output, destination_blob_name)
         cloud_storage_client.verify_if_file_exist(destination_blob_name)
-        updated_db(task_id, destination_blob_name)
+        db_response = updated_db(task_id, destination_blob_name)
+        print(db_response)
         Util.delete_temporal_path(temp_path)
         if ENABLED_EMAIL == "true":
            SengridMail.send_mail(f'{file_name}.{format_input}', target_format, task_id)
@@ -80,12 +81,12 @@ def convert_audio_file(response):
 def updated_db(taskId, destination_blob_name):
     task = db.session.query(Task).filter(Task.folder == taskId).one_or_none()
     if task is None:
-        return {"message": "No se encontro la tarea", "status": "fail"}, 404
+        return {"message": "No se encontro la tarea", "status": "fail"}
     task.path_output = destination_blob_name
     task.date_updated = datetime.datetime.now()
     task.status = "processed"
     db.session.commit()
-    return {"message": "Actualización realizada", "status": "success"}, 200
+    return {"message": "Actualización realizada", "status": "success"}
     
 streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
 print(f"Listening for messages on {subscription_path}..\n")
