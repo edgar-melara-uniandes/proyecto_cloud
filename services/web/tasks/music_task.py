@@ -58,7 +58,7 @@ def convert_audio_file(response):
     output = f'{temp_path}/{file_name}.{target_format}'
     
     try:
-        subprocess.call(["ffmpeg","-i", temporal_file_destination, output])
+        subprocess.call(["ffmpeg","-i", temporal_file_destination, output,"-y"])
         if os.path.exists(output):
             print(f"Archivo convertido exitosamente en: {output}")
         else:
