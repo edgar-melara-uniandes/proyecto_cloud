@@ -24,4 +24,4 @@ RUN pip install -r requirements.txt
 
 COPY . ./tasks
 
-CMD python -m tasks.music_task.py
+CMD python3 -m tasks.music_task.py
