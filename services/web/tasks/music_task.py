@@ -91,7 +91,7 @@ with subscriber:
         # unless an exception is encountered first.
         # streaming_pull_future.result(timeout=timeout)
         print("core")
-        streaming_pull_future.result(5)#normalmente NO se quiere valor aca, escucha indefinidamente 
+        streaming_pull_future.result()#normalmente NO se quiere valor aca, escucha indefinidamente 
         print("coreend")
     except TimeoutError:
         streaming_pull_future.cancel()  # Trigger the shutdown.
