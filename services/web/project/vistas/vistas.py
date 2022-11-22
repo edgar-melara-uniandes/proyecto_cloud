@@ -3,9 +3,10 @@ import os
 import shutil
 import uuid
 import datetime
+import json
 from google.cloud import storage
-from celery import Celery
-from celery.result import AsyncResult
+#from celery import Celery
+#from celery.result import AsyncResult
 from flask_restful import Resource
 from flask import request, send_file, send_from_directory
 from werkzeug.utils import secure_filename
@@ -13,6 +14,7 @@ from dotenv import load_dotenv
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from project.modelos import db, Appuser, Task, AppuserSchema, TaskSchema
 from project.vistas.cloud_storage_client import CloudStorageClient
+from project.vistas.cloud_publisher_client import CloudPublisherClient
 
 load_dotenv() 
 
@@ -20,14 +22,15 @@ user_schema = AppuserSchema()
 task_schema = TaskSchema()
 list_task_schema = TaskSchema(many=True)
 UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER', '/usr/src/app')}/tmp"))
-BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
-BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
-celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
+#BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+#BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+#celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
 cloud_storage_client = CloudStorageClient()
+cloud_publisher_client = CloudPublisherClient()
 
-@celery_app.task(name = 'music_conversions')
-def add_music_conversion_request(music_conversion):
-    pass
+#@celery_app.task(name = 'music_conversions')
+#def add_music_conversion_request(music_conversion):
+#    pass
 
 ALLOWED_EXTENSIONS = {"mp3", "aac", "ogg", "wav","wma"}
 class VistaRegistro(Resource):
@@ -104,10 +107,12 @@ class VistaTasks(Resource):
                     "targetType": new_task.format_output, 
                     "taskId": new_task.folder,
                     "fileName": new_task.file_name.replace(" ", "_"),
-                    "formatInput": new_task.format_input                    
+                    "formatInput": new_task.format_input
                 }
-            args = (data,)
-            task = add_music_conversion_request.apply_async(args)
+            #args = (data,) usado en Celery
+            data=json.dumps(data)
+            #task = add_music_conversion_request.apply_async(args) usado en Celery
+            task = cloud_publisher_client.publish_message(data)
             return {"message": "El archivo fue cargado y la tarea creada", "status":"success"}
         return {"message": "Problemas cargando el archivo", "status":"fail"}, 404
         
