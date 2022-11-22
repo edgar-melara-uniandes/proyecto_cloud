@@ -30,7 +30,10 @@ subscription_path = subscriber.subscription_path(GCP_PROJECT_NAME, TARGET_SUBSCR
 #def add_music_conversion_request(response):
 def callback(message: pubsub_v1.subscriber.message.Message) -> None:
     #print("Adding request to queue, musicID: " + str(response['userId']))
-    msg = f"{message}"
+    #print(f"Received {message.data}."+ str(datetime.datetime.now()) )
+
+    msg = message.data.decode('utf-8')
+
     decoded_message = json.loads(msg)
     print("Adding request to queue, musicID: " + str(decoded_message['userId']))
     convert_audio_file(decoded_message)
