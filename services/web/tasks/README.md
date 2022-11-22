@@ -30,7 +30,7 @@ sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CR
  ```
  - Para envío de correo deshabilitado:
  ```bash
-sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=/credential/service-account/<ruta-de-service-account-json> -e DATABASE_URL=<url-database> -e ENABLED_EMAIL=false -d --name worker-cloud-prod -v $(pwd)/service-account:/credential/service-account --link redis-stack-server  lsolier/worker-cloud:latest
+sudo docker run -e BUCKET_NAME=music-converter-prueba-1 -e GOOGLE_APPLICATION_CREDENTIALS=/credential/service-account/<service-account-json> -e DATABASE_URL=<url-database> -e ENABLED_EMAIL=false -e GCP_PROJECT_NAME=devopslsolier -e TARGET_SUBSCRIPTION=converter-topic-sub -d --name worker-cloud-prod-pub-sub -v $(pwd)/service-account:/credential/service-account lsolier/worker-cloud-pub-sub:latest
  ```
  - verificar que ambos contenedores se encuentran en ejecucion
  ```bash
