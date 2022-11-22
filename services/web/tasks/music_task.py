@@ -63,7 +63,8 @@ def convert_audio_file(response):
             print(f"Archivo convertido exitosamente en: {output}")
         else:
             print("Archivo no se llego a crear")
-    except:
+    except Exception as e:
+        print("ERRORRRR=====> " + e)
         print("Error publishing file in cloud storage")
         pass
     else:
