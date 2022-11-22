@@ -110,9 +110,9 @@ class VistaTasks(Resource):
                     "formatInput": new_task.format_input
                 }
             #args = (data,) usado en Celery
-            data=json.dumps(data)
+            serialized_data=json.dumps(data)
             #task = add_music_conversion_request.apply_async(args) usado en Celery
-            task = cloud_publisher_client.publish_message(data)
+            task = cloud_publisher_client.publish_message(serialized_data)
             return {"message": "El archivo fue cargado y la tarea creada", "status":"success"}
         return {"message": "Problemas cargando el archivo", "status":"fail"}, 404
         
