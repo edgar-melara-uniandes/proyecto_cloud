@@ -1,3 +1,4 @@
+service: worker-service
 runtime: python
 #runtime: python310     si modo standard
 env: flex #             si modo flexible
