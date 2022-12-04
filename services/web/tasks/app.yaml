@@ -1,0 +1,14 @@
+runtime: python
+env: flex
+entrypoint: python3 -m tasks.music_task.py
+runtime_config:
+    python_version: 3.10
+env_variables:
+    BUCKET_NAME: music-converter-prueba-1
+    DATABASE_URL: postgresql+pg8000://user_music_converted:user_music_converted@10.89.208.3:5432/db_music_converted
+    ENABLED_EMAIL: false
+    TARGET_SUBSCRIPTION: converter-topic-sub
+    #GCP_PROJECT_NAME: devopslsolier
+    #GOOGLE_APPLICATION_CREDENTIALS: /credential/service-account/path_to_your_.json_credential_file
+#manual_scaling:
+#    instances: 2
