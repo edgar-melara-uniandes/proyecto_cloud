@@ -1,16 +1,16 @@
 service: worker-service
-runtime: python
-#runtime: python310     si modo standard
+runtime: custom
+#runtime: python310     si modo flexible, solo python
 env: flex #             si modo flexible
 entrypoint: python3 -m tasks.music_task.py
-runtime_config:
-    python_version: 3.7
+# runtime_config:          modo flexible python
+#    python_version: 3.7   modo flexible python
 env_variables:
     BUCKET_NAME: <bucket_name>
     DATABASE_URL: <database_connection>
     ENABLED_EMAIL: false
     TARGET_SUBSCRIPTION: <subscription_name>
-    GCP_PROJECT_NAME: devopslsolier
+    GCP_PROJECT_NAME: <project_name>
     #GOOGLE_APPLICATION_CREDENTIALS: /credential/service-account/path_to_your_.json_credential_file
 #manual_scaling:
 #    instances: 2
