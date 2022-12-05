@@ -1,7 +1,26 @@
-runtime: python310
+runtime: python
 
-entrypoint: gunicorn --bind 0.0.0.0:5000 manage:app
+env: flex
+runtime_config:
+    python_version: 3.7
+
+entrypoint: gunicorn -b :8080 manage:app
 env_variables:
-    CLOUD_STORAGE_BUCKET: gs://credencials-app-music/.env.cloud
-manual_scaling:
-    instances: 1
+    DATABASE_URL: "postgresql+pg8000://user_music_converted:user_music_converted@10.89.208.3:5432/db_music_converted"
+    FLASK_APP: "project/__init__.py"
+    FLASK_DEBUG: "1"
+    SQL_HOST: "10.89.208.3"
+    SQL_PORT: "5432"
+    DATABASE: "db_music_converted"
+    APP_FOLDER: "/home/app/web"
+    SECRET_KEY: "23984e0190573cfd79738563ec2fe708"
+    CELERY_BROKER_URL: "redis://10.128.0.5:6379/0"
+    CELERY_RESULT_BACKEND: "redis://10.128.0.5:6379/0"
+    ENDPOINT_CONVERTED_DB: "http://web:5001/api/converted"
+    GOOGLE_APPLICATION_CREDENTIALS: "path_to_your_.json_credential_file"
+    GCP_PROJECT_NAME: "devopslsolier"
+    TARGET_TOPIC: "converter-topic"
+    BUCKET_NAME: "music-converter-prueba-1"
+
+automatic_scaling:
+    max_num_instances: 1
