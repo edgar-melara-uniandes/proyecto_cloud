@@ -1,14 +1,14 @@
 FROM gcr.io/google_appengine/python
 RUN apt-get -y update && apt-get install -y --no-install-recommends ffmpeg
 
-# ENV VIRTUAL_ENV /env
-# ENV PATH /env/bin:$PATH
+RUN virtualenv /env -p python3.7
 
-# WORKDIR /usr/src/app
+ENV VIRTUAL_ENV /env
+ENV PATH /env/bin:$PATH
 
-# RUN virtualenv /env
-# RUN pip install --upgrade pip
-# COPY ./requirements.txt .
-# RUN pip install -r requirements.txt
+ADD requirements.txt /app/requirements.txt
+RUN pip install -r /app/requirements.txt
 
-# CMD python3 -m tasks.music_task.py
+ADD . /app
+
+CMD python3 -m tasks.music_task.py
