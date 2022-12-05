@@ -1,0 +1,7 @@
+runtime: python310
+
+entrypoint: gunicorn --bind 0.0.0.0:5000 manage:app
+env_variables:
+    CLOUD_STORAGE_BUCKET: gs://credencials-app-music/.env.cloud
+manual_scaling:
+    instances: 1
