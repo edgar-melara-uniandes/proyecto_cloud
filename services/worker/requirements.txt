@@ -1,0 +1,14 @@
+#Flask-RESTful==0.3.9
+#celery==5.2.3
+#Flask==2.2.2
+#redis==4.1.4
+pydub==0.25.1
+#requests==2.28.1
+google-cloud-storage
+#Flask-SQLAlchemy==3.0.2
+marshmallow
+marshmallow-sqlalchemy
+cloud-sql-python-connector
+SQLAlchemy==1.4.42
+pg8000
+google-cloud-pubsub

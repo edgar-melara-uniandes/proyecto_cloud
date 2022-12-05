@@ -1,0 +1,11 @@
+service: worker-service
+runtime: custom
+env: flex #             si modo flexible
+env_variables:
+    BUCKET_NAME: <bucket_name>
+    DATABASE_URL: <database_connection>
+    ENABLED_EMAIL: false
+    TARGET_SUBSCRIPTION: <subscription_name>
+    GCP_PROJECT_NAME: <project_name>
+#manual_scaling:
+#    instances: 2
