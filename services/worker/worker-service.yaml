@@ -1,6 +1,6 @@
 service: worker-service
 runtime: custom
-env: flex #             si modo flexible
+env: flex
 env_variables:
     BUCKET_NAME: <bucket_name>
     DATABASE_URL: <database_connection>

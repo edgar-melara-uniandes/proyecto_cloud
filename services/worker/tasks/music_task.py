@@ -5,7 +5,6 @@ import datetime
 import json
 import tasks.mail_task_sendgrid as SengridMail
 
-#from celery import Celery
 import subprocess
 from posixpath import splitext
 from tasks.cloud_storage_client import CloudStorageClient
@@ -14,9 +13,6 @@ from tasks.modelos import Task
 
 import tasks.db as db
 
-#BACKEND_URL = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
-#BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
-#celery_app = Celery('music_conversions_batch', backend=BACKEND_URL, broker=BROKER_URL)
 UPLOAD_FOLDER = str(os.environ.get("MEDIA_FOLDER", f"{os.getenv('APP_FOLDER')}/project/media"))
 ENDPOINT = str(os.environ.get("ENDPOINT_CONVERTED_DB", "http://127.0.0.1:1337/api/converted"))
 ENABLED_EMAIL = os.environ.get('ENABLED_EMAIL', 'false')
@@ -26,18 +22,13 @@ TARGET_SUBSCRIPTION = os.environ.get("TARGET_SUBSCRIPTION", "converter-topic-sub
 subscriber = pubsub_v1.SubscriberClient()
 subscription_path = subscriber.subscription_path(GCP_PROJECT_NAME, TARGET_SUBSCRIPTION)
 
-#@celery_app.task(name='music_conversions')
-#def add_music_conversion_request(response):
 def callback(message: pubsub_v1.subscriber.message.Message) -> None:
-    #print("Adding request to queue, musicID: " + str(response['userId']))
-    #print(f"Received {message.data}."+ str(datetime.datetime.now()) )
-
+    
     msg = message.data.decode('utf-8')
 
     decoded_message = json.loads(msg)
     print("Adding request to queue, musicID: " + str(decoded_message['userId']))
     convert_audio_file(decoded_message)
-    #print("After 60 seconds the request was attended")
     message.ack()
     return "Music converted :)"
 
@@ -93,11 +84,11 @@ print(f"Listening for messages on {subscription_path}..\n")
 
 with subscriber:
     try:
+        print("Listening for messages...")
         # When `timeout` is not set, result() will block indefinitely,
         # unless an exception is encountered first.
         # streaming_pull_future.result(timeout=timeout)
-        print("core")
-        streaming_pull_future.result()#normalmente NO se quiere valor aca, escucha indefinidamente 
+        streaming_pull_future.result()
         print("coreend")
     except TimeoutError:
         streaming_pull_future.cancel()  # Trigger the shutdown.
