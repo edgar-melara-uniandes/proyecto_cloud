@@ -1,5 +1,6 @@
 FROM gcr.io/google_appengine/python
-RUN apt-get -y update && apt-get install -y --no-install-recommends ffmpeg
+#RUN apt-get -y update && apt-get install -y --no-install-recommends ffmpeg
+RUN apt-get -y update && apt-get install -y ffmpeg
 
 RUN virtualenv /env -p python3.7
 
